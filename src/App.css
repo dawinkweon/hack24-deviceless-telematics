@@ -59,6 +59,14 @@ body {
   text-align: center;
 }
 
+.fixed-top {
+position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+}
+
 .button-24:hover,
 .button-24:active {
   background-color: initial;

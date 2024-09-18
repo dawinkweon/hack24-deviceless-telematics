@@ -1,7 +1,7 @@
 import "./App.css";
 import * as ml5 from "ml5";
 import Webcam from "react-webcam";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState,useCallback } from "react";
 
 // ideal demo size: 335, 640
 const dimensions = {
@@ -14,6 +14,23 @@ function App() {
   const webcamRef = useRef();
   const canvasRef = useRef();
   const { width, height } = dimensions;
+
+  const [deviceId, setDeviceId] = useState({});
+  const [devices, setDevices] = useState([]);
+  const [selectedDevice, setSelectedDevice] = useState(null);
+
+  const handleDevices = useCallback(
+    mediaDevices =>
+      setDevices(mediaDevices.filter(({ kind }) => kind === "videoinput")),
+    [setDevices]
+  );
+
+  useEffect(
+    () => {
+      navigator.mediaDevices.enumerateDevices().then(handleDevices);
+    },
+    [handleDevices]
+  );
 
   useEffect(() => {
     let detectionInterval;
@@ -64,10 +81,12 @@ function App() {
 
   const detectedGroups = Object.groupBy(detected, ({label}) => label);
   Object.values(detectedGroups).sort((a,b) => { return a[0].label > b[0].label});
-  
   return (
     <div style={{width: dimensions.width}}>
-      <Webcam ref={webcamRef} className="webcam" />
+      <select className="fixed-top">
+        { devices.map((device) => <option onClick={() => setSelectedDevice(device)}>{device.label}</option>)}
+      </select>
+      <Webcam ref={webcamRef} className="webcam" videoConstraints={{ deviceId: selectedDevice?.deviceId }} />
       <canvas ref={canvasRef} className="canvas" />
       <div>
         {Object.values(detectedGroups).map((group) => (
