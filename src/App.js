@@ -66,30 +66,33 @@ function App() {
     };
   }, [width, height]);
 
-  useEffect(() => {
-    console.log("Changing input source", facingMode);
-    const constraints = {
-      facingMode: { exact: facingMode },
-    };
-    webcamRef.current.videoConstraints = constraints;
-  }, [facingMode])
+  // useEffect(() => {
+  //   console.log("Changing input source", facingMode);
+  //   const constraints = {
+  //     facingMode: { exact: facingMode },
+  //   };
+  //   webcamRef.current.videoConstraints = constraints;
+  // }, [facingMode])
 
   const detectedGroups = Object.groupBy(detected, ({ label }) => label);
   Object.values(detectedGroups).sort((a, b) => {
     return a[0].label > b[0].label;
   });
+
+  const videoConstraint = { facingMode: { exact: "environment"}};
   return (
     <div style={{ width: dimensions.width }}>
-      <select className="fixed-top" onChange={(e) => setFacingMode(e.target.value)} value={facingMode}>
+      {/* <select className="fixed-top" onChange={(e) => setFacingMode(e.target.value)} value={facingMode}>
         {cameraDirections.map(({label, id}) => (
           <option key={id} value={id}>
             {label}
           </option>
         ))}
-      </select>
+      </select> */}
       <Webcam
         ref={webcamRef}
         className="webcam"
+        videoConstraints={videoConstraint}
       />
       <canvas ref={canvasRef} className="canvas" />
       <div>
