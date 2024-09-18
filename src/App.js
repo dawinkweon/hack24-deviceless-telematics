@@ -67,6 +67,7 @@ function App() {
   }, [width, height]);
 
   useEffect(() => {
+    console.log("Changing input source", facingMode);
     const constraints = {
       facingMode: { exact: facingMode },
     };
@@ -79,9 +80,9 @@ function App() {
   });
   return (
     <div style={{ width: dimensions.width }}>
-      <select className="fixed-top">
+      <select className="fixed-top" onChange={(e) => setFacingMode(e.target.value)} value={facingMode}>
         {cameraDirections.map(({label, id}) => (
-          <option onClick={() => setFacingMode(id)}>
+          <option key={id} value={id}>
             {label}
           </option>
         ))}
