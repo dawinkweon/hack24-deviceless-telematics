@@ -3,21 +3,20 @@ import * as ml5 from "ml5";
 import Webcam from "react-webcam";
 import { useEffect, useRef, useState, useCallback } from "react";
 
-const cameraDirections = [{ label: "selfie", id: "user" }, { label: "external", id : "environment" }];
-
 // ideal demo size: 335, 640
 const dimensions = {
   width: 320,
   height: 240,
 };
+
+const videoConstraint = { facingMode: { exact: "environment" } };
+
 function App() {
   const [detected, setDetected] = useState([]);
 
   const webcamRef = useRef();
   const canvasRef = useRef();
   const { width, height } = dimensions;
-
-  const [facingMode, setFacingMode] = useState("environment");
 
   useEffect(() => {
     let detectionInterval;
@@ -66,29 +65,13 @@ function App() {
     };
   }, [width, height]);
 
-  // useEffect(() => {
-  //   console.log("Changing input source", facingMode);
-  //   const constraints = {
-  //     facingMode: { exact: facingMode },
-  //   };
-  //   webcamRef.current.videoConstraints = constraints;
-  // }, [facingMode])
-
   const detectedGroups = Object.groupBy(detected, ({ label }) => label);
   Object.values(detectedGroups).sort((a, b) => {
     return a[0].label > b[0].label;
   });
 
-  const videoConstraint = { facingMode: { exact: "environment"}};
   return (
     <div style={{ width: dimensions.width }}>
-      {/* <select className="fixed-top" onChange={(e) => setFacingMode(e.target.value)} value={facingMode}>
-        {cameraDirections.map(({label, id}) => (
-          <option key={id} value={id}>
-            {label}
-          </option>
-        ))}
-      </select> */}
       <Webcam
         ref={webcamRef}
         className="webcam"
