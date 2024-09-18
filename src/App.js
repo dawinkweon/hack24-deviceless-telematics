@@ -1,7 +1,9 @@
 import "./App.css";
 import * as ml5 from "ml5";
 import Webcam from "react-webcam";
-import { useEffect, useRef, useState,useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+
+const cameraDirections = [{ label: "selfie", id: "user" }, { label: "external", id : "environment" }];
 
 // ideal demo size: 335, 640
 const dimensions = {
@@ -15,22 +17,7 @@ function App() {
   const canvasRef = useRef();
   const { width, height } = dimensions;
 
-  const [deviceId, setDeviceId] = useState({});
-  const [devices, setDevices] = useState([]);
-  const [selectedDevice, setSelectedDevice] = useState(null);
-
-  const handleDevices = useCallback(
-    mediaDevices =>
-      setDevices(mediaDevices.filter(({ kind }) => kind === "videoinput")),
-    [setDevices]
-  );
-
-  useEffect(
-    () => {
-      navigator.mediaDevices.enumerateDevices().then(handleDevices);
-    },
-    [handleDevices]
-  );
+  const [facingMode, setFacingMode] = useState("environment");
 
   useEffect(() => {
     let detectionInterval;
@@ -79,18 +66,36 @@ function App() {
     };
   }, [width, height]);
 
-  const detectedGroups = Object.groupBy(detected, ({label}) => label);
-  Object.values(detectedGroups).sort((a,b) => { return a[0].label > b[0].label});
+  useEffect(() => {
+    const constraints = {
+      facingMode: { exact: facingMode },
+    };
+    webcamRef.current.videoConstraints = constraints;
+  }, [facingMode])
+
+  const detectedGroups = Object.groupBy(detected, ({ label }) => label);
+  Object.values(detectedGroups).sort((a, b) => {
+    return a[0].label > b[0].label;
+  });
   return (
-    <div style={{width: dimensions.width}}>
+    <div style={{ width: dimensions.width }}>
       <select className="fixed-top">
-        { devices.map((device) => <option onClick={() => setSelectedDevice(device)}>{device.label}</option>)}
+        {cameraDirections.map(({label, id}) => (
+          <option onClick={() => setFacingMode(id)}>
+            {label}
+          </option>
+        ))}
       </select>
-      <Webcam ref={webcamRef} className="webcam" videoConstraints={{ deviceId: selectedDevice?.deviceId }} />
+      <Webcam
+        ref={webcamRef}
+        className="webcam"
+      />
       <canvas ref={canvasRef} className="canvas" />
       <div>
         {Object.values(detectedGroups).map((group) => (
-          <div className="card">{group[0].label} ({group.length})</div>
+          <div className="card">
+            {group[0].label} ({group.length})
+          </div>
         ))}
         <button className="button-24">Submit ({detected.length} asset)</button>
       </div>
