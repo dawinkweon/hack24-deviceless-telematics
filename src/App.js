@@ -9,7 +9,9 @@ const dimensions = {
   height: window.innerWidth / 4 * 3,
 };
 
-const videoConstraint = undefined;//{ facingMode: { exact: "user" } };
+const isMobile = dimensions.width <= 768;
+
+const videoConstraint = isMobile ? { facingMode: { exact: "user" } } : undefined;
 
 function App() {
   const [detected, setDetected] = useState([]);
