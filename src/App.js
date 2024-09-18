@@ -1,15 +1,15 @@
 import "./App.css";
 import * as ml5 from "ml5";
 import Webcam from "react-webcam";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // ideal demo size: 335, 640
 const dimensions = {
-  width: 320,
-  height: 240,
+  width: window.innerWidth,
+  height: window.innerWidth / 4 * 3,
 };
 
-const videoConstraint = { facingMode: { exact: "environment" } };
+const videoConstraint = undefined;//{ facingMode: { exact: "user" } };
 
 function App() {
   const [detected, setDetected] = useState([]);
