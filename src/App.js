@@ -2,9 +2,11 @@ import './App.css';
 import * as ml5 from "ml5";
 import Webcam from "react-webcam";
 import {useEffect, useRef} from "react";
+
+// ideal demo size: 335, 640
 const dimensions = {
-  width: 800,
-  height: 500
+  width: 320, 
+  height: 240
 }
 function App() {
   const webcamRef = useRef();
@@ -36,14 +38,15 @@ function App() {
 
       objectDetector.detect(webcamRef.current.video, (err, results) => {
         const ctx = canvasRef.current.getContext('2d');
-        ctx.clearRect(0, 0, width, height);
+        ctx.clearRect(0, 0, width,height);
         if (results && results.length) {
           results.forEach((detection) => {
+            // console.log(detection);
             ctx.beginPath();
             ctx.fillStyle = "#FF0000";
             const { label, x, y, width, height } = detection;
-            ctx.fillText(label, x, y - 5);
-            ctx.rect(x, y, width, height);
+            ctx.fillText(label, x/2 + 5, y/2 + 10);
+            ctx.rect(x/2, y/2, width/2, height/2);
             ctx.stroke();
           });
         }
